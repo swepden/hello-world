@@ -13,6 +13,8 @@ BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 GREEN = (0, 255, 0)
 RED = (255, 0, 0)
+GREEN_BG = (0, 150, 50) # New background color
+PARTY_HAT_COLOR = (255, 0, 255) # Magenta for the hat
 
 # Define window dimensions and cell size
 WINDOW_WIDTH = 600
@@ -152,7 +154,7 @@ while running:
                 food_spawn = True
 
     # --- Drawing Part --- (Happens regardless of game_over to show final state)
-    screen.fill(BLACK)
+    screen.fill(GREEN_BG)
     # Draw grid
     for x in range(0, WINDOW_WIDTH, CELL_SIZE):
         pygame.draw.line(screen, WHITE, (x, 0), (x, WINDOW_HEIGHT))
@@ -160,7 +162,26 @@ while running:
         pygame.draw.line(screen, WHITE, (0, y), (WINDOW_WIDTH, y))
     # Draw snake
     for segment in snake_body:
-        pygame.draw.rect(screen, GREEN, pygame.Rect(segment[0] * CELL_SIZE, segment[1] * CELL_SIZE, CELL_SIZE, CELL_SIZE))
+        center_x = segment[0] * CELL_SIZE + CELL_SIZE // 2
+        center_y = segment[1] * CELL_SIZE + CELL_SIZE // 2
+        pygame.draw.circle(screen, GREEN, (center_x, center_y), CELL_SIZE // 2)
+
+    # Draw party hat on the snake's head
+    if snake_body: # Ensure snake_body is not empty
+        head_segment = snake_body[0]
+        head_center_x = head_segment[0] * CELL_SIZE + CELL_SIZE // 2
+        head_center_y = head_segment[1] * CELL_SIZE + CELL_SIZE // 2
+
+        hat_height = CELL_SIZE * 0.8
+        hat_width_base = CELL_SIZE * 0.6
+
+        point1 = (head_center_x - hat_width_base // 2, head_center_y - CELL_SIZE // 4) # Left base
+        point2 = (head_center_x + hat_width_base // 2, head_center_y - CELL_SIZE // 4) # Right base
+        point3 = (head_center_x, head_center_y - CELL_SIZE // 4 - hat_height)     # Tip
+
+        hat_points = [point1, point2, point3]
+        pygame.draw.polygon(screen, PARTY_HAT_COLOR, hat_points)
+
     # Draw food
     pygame.draw.rect(screen, RED, pygame.Rect(food_pos[0] * CELL_SIZE, food_pos[1] * CELL_SIZE, CELL_SIZE, CELL_SIZE))
     # Show live score
